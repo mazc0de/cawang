@@ -1,0 +1,275 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/manrope";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tokens from taste-skill app style "pastel-consumer" (.taste-skill/direction.json):
+ * an off-white ground with white cards, near-black primary, one cobalt for data, pale
+ * category tiles with the dark of their own hue as ink. Semantic money colours are fixed
+ * by the spec: income green, expense red, transfer blue/neutral, locked funds amber.
+ */
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: "Manrope Variable", "Manrope", Inter, system-ui, sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-ink: var(--brand-ink);
+  --color-income: var(--income);
+  --color-income-soft: var(--income-soft);
+  --color-expense: var(--expense);
+  --color-expense-soft: var(--expense-soft);
+  --color-transfer: var(--transfer);
+  --color-transfer-soft: var(--transfer-soft);
+  --color-locked: var(--locked);
+  --color-locked-soft: var(--locked-soft);
+  --color-caution: var(--caution);
+  --color-caution-soft: var(--caution-soft);
+  --color-raised: var(--raised);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --radius: 10px;
+  --radius-card: 20px;
+
+  --background: #f3f5f7;
+  --foreground: #1b1d1f;
+  --card: #ffffff;
+  --card-foreground: #1b1d1f;
+  --popover: #ffffff;
+  --popover-foreground: #1b1d1f;
+  --raised: #f2f8fd;
+  --primary: #1b1d1f;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1f4;
+  --secondary-foreground: #1b1d1f;
+  --muted: #eef1f4;
+  --muted-foreground: #5c6064;
+  --accent: #eef1f4;
+  --accent-foreground: #1b1d1f;
+  --destructive: #c41c29;
+  --border: #e6e6e6;
+  --input: #d6d9dd;
+  --ring: #1d5fd6;
+
+  --brand: #1d5fd6;
+  --brand-soft: #dcf1ff;
+  --brand-ink: #0a3a80;
+  --income: #2f7a45;
+  --income-soft: #dcfae5;
+  --expense: #c41c29;
+  --expense-soft: #ffedea;
+  --transfer: #1d5fd6;
+  --transfer-soft: #dcf1ff;
+  --locked: #92400e;
+  --locked-soft: #fff4dc;
+  --caution: #b4470f;
+  --caution-soft: #ffeadb;
+
+  --chart-1: #1d5fd6;
+  --chart-2: #b45309;
+  --chart-3: #2a8798;
+  --chart-4: #5c6064;
+  --chart-5: #9aa0a6;
+
+  --sidebar: #f3f5f7;
+  --sidebar-foreground: #1b1d1f;
+  --sidebar-primary: #1b1d1f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e6e9ed;
+  --sidebar-accent-foreground: #1b1d1f;
+  --sidebar-border: #e6e6e6;
+  --sidebar-ring: #1d5fd6;
+}
+
+.dark {
+  --background: #0b0b0c;
+  --foreground: #f4f4f5;
+  --card: #161618;
+  --card-foreground: #f4f4f5;
+  --popover: #1c1c1f;
+  --popover-foreground: #f4f4f5;
+  --raised: #1f1f22;
+  --primary: #f4f4f5;
+  --primary-foreground: #111113;
+  --secondary: #232326;
+  --secondary-foreground: #f4f4f5;
+  --muted: #232326;
+  --muted-foreground: #a8a8b0;
+  --accent: #232326;
+  --accent-foreground: #f4f4f5;
+  --destructive: #f0707a;
+  --border: #2a2a2e;
+  --input: #3a3a3f;
+  --ring: #6ea3ff;
+
+  --brand: #6ea3ff;
+  --brand-soft: #14233d;
+  --brand-ink: #b8d3ff;
+  --income: #4cc584;
+  --income-soft: #15281c;
+  --expense: #f0707a;
+  --expense-soft: #2e181b;
+  --transfer: #6ea3ff;
+  --transfer-soft: #14233d;
+  --locked: #f0b44c;
+  --locked-soft: #2b2212;
+  --caution: #fb8f4f;
+  --caution-soft: #2e1c12;
+
+  --chart-1: #6ea3ff;
+  --chart-2: #f0b44c;
+  --chart-3: #4fb8c9;
+  --chart-4: #a8a8b0;
+  --chart-5: #6b6b73;
+
+  --sidebar: #0b0b0c;
+  --sidebar-foreground: #f4f4f5;
+  --sidebar-primary: #f4f4f5;
+  --sidebar-primary-foreground: #111113;
+  --sidebar-accent: #1f1f22;
+  --sidebar-accent-foreground: #f4f4f5;
+  --sidebar-border: #2a2a2e;
+  --sidebar-ring: #6ea3ff;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility calc-key {
+  @apply num h-10 rounded-lg bg-card text-[15px] transition-colors outline-none hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-95;
+}
+
+/* Landing page motion (taste-skill: masked headline + staggered section entrances). */
+@keyframes rise-from-baseline {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.masked-line {
+  display: block;
+  overflow: hidden;
+  /* Room for descenders (g, j, y) inside the mask, given back so line spacing is unchanged. */
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+.masked-line > span {
+  display: block;
+  animation: rise-from-baseline 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.masked-line:nth-child(2) > span {
+  animation-delay: 110ms;
+}
+.after-headline {
+  animation: fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) 650ms both;
+}
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--reveal-index, 0) * 75ms);
+}
+.reveal-ready [data-reveal][data-revealed] {
+  opacity: 1;
+  transform: none;
+}
+/* Headings only travel; they are never hidden, even before their entrance runs. */
+.reveal-ready [data-reveal='heading'] {
+  opacity: 1;
+}
+.grow-x {
+  transform-origin: left;
+}
+.reveal-ready .grow-x[data-reveal] {
+  transform: scaleX(0.2);
+}
+.reveal-ready .grow-x[data-reveal][data-revealed] {
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .masked-line > span,
+  .after-headline {
+    animation: none;
+  }
+  .reveal-ready [data-reveal],
+  .reveal-ready .grow-x[data-reveal] {
+    transform: none;
+    transition: opacity 300ms linear;
+  }
+}
+
+/* Recharts measures label widths with an off-screen span; keep it invisible (it must stay laid out). */
+#recharts_measurement_span {
+  visibility: hidden;
+}
