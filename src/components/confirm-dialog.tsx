@@ -18,11 +18,22 @@ interface ConfirmDialogProps {
   description: string
   confirmLabel: string
   destructive?: boolean
+  /** Keeps the confirm button off, e.g. while the dialog is still checking something. */
+  confirmDisabled?: boolean
   /** Resolve to close the dialog; throw (after showing the error) to keep it open. */
   onConfirm: () => Promise<void>
 }
 
-export function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel, destructive, onConfirm }: ConfirmDialogProps) {
+export function ConfirmDialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  confirmLabel,
+  destructive,
+  confirmDisabled,
+  onConfirm,
+}: ConfirmDialogProps) {
   const { t } = useTranslation()
   const [pending, setPending] = useState(false)
   return (
@@ -36,7 +47,7 @@ export function ConfirmDialog({ open, onOpenChange, title, description, confirmL
           <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
           <Button
             variant={destructive ? 'destructive' : 'default'}
-            disabled={pending}
+            disabled={pending || confirmDisabled}
             onClick={async () => {
               setPending(true)
               try {

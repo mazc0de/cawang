@@ -56,6 +56,42 @@ export function useSetCategoryArchived() {
   })
 }
 
+export interface CategoryUsage {
+  transactions: number
+  safePays: number
+  recurring: number
+  budgets: number
+}
+
+/** How many records still point at the Category; any but Budgets block its deletion. */
+export function useCategoryUsage(id: string | undefined) {
+  return useQuery({
+    queryKey: [...categoriesKey, 'usage', id],
+    enabled: Boolean(id),
+    // Always recount: a Transaction may have been added since the last look.
+    staleTime: 0,
+    gcTime: 0,
+    queryFn: async (): Promise<CategoryUsage> => {
+      const count = async (table: 'transactions' | 'safe_pays' | 'recurring_templates' | 'budgets') => {
+        const { count, error } = await supabase.from(table).select('id', { count: 'exact', head: true }).eq('category_id', id!)
+        if (error) throw error
+        return count ?? 0
+      }
+      const [transactions, safePays, recurring, budgets] = await Promise.all([
+        count('transactions'),
+        count('safe_pays'),
+        count('recurring_templates'),
+        count('budgets'),
+      ])
+      return { transactions, safePays, recurring, budgets }
+    },
+  })
+}
+
+export function isCategoryInUse(usage: CategoryUsage) {
+  return usage.transactions + usage.safePays + usage.recurring > 0
+}
+
 /** Only works for an unused Category; otherwise the database answers 23503. */
 export function useDeleteCategory() {
   const invalidate = useInvalidateCategories()

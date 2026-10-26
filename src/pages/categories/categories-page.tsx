@@ -1,5 +1,6 @@
 import { Archive, ArchiveRestore, ChevronDown, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -17,7 +18,14 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { CategoryForm } from '@/features/categories/category-form'
 import { CategoryTile } from '@/features/categories/category-tile'
-import { useCategories, useDeleteCategory, useSetCategoryArchived } from '@/features/categories/queries'
+import {
+  type CategoryUsage,
+  isCategoryInUse,
+  useCategories,
+  useCategoryUsage,
+  useDeleteCategory,
+  useSetCategoryArchived,
+} from '@/features/categories/queries'
 import type { Category, CategoryType } from '@/lib/database'
 import { errorMessage } from '@/lib/errors'
 import { cn } from '@/lib/utils'
@@ -126,8 +134,18 @@ function CategoryList({ type, categories, loading, className, onEdit, onArchive,
   )
 }
 
+/** "12 transactions, 1 Safe-Pay and 2 recurring transactions": what still uses the Category. */
+function usageList(usage: CategoryUsage, t: TFunction, language: string) {
+  const parts = [
+    usage.transactions > 0 && t('categories.usage.transactions', { count: usage.transactions }),
+    usage.safePays > 0 && t('categories.usage.safePays', { count: usage.safePays }),
+    usage.recurring > 0 && t('categories.usage.recurring', { count: usage.recurring }),
+  ].filter((part): part is string => Boolean(part))
+  return new Intl.ListFormat(language, { type: 'conjunction' }).format(parts)
+}
+
 export function CategoriesPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const categories = useCategories()
   const setArchived = useSetCategoryArchived()
   const deleteCategory = useDeleteCategory()
@@ -135,6 +153,8 @@ export function CategoriesPage() {
   const [mobileType, setMobileType] = useState<CategoryType>('expense')
   const [form, setForm] = useState<{ open: boolean; category?: Category }>({ open: false })
   const [deleting, setDeleting] = useState<Category | null>(null)
+  const usage = useCategoryUsage(deleting?.id)
+  const inUse = usage.data ? isCategoryInUse(usage.data) : false
 
   const all = categories.data ?? []
   const ofType = (type: CategoryType) => all.filter((category) => category.type === type)
@@ -148,6 +168,30 @@ export function CategoriesPage() {
         onError: (error) => toast.error(errorMessage(error, t)),
       },
     )
+
+  // The delete dialog first counts what uses the Category: a used one can only be archived.
+  const deleteDescription = () => {
+    if (usage.isPending) return t('categories.deleteChecking')
+    if (usage.isError) return errorMessage(usage.error, t)
+    if (inUse) return t('categories.deleteInUseBody', { usage: usageList(usage.data, t, i18n.language) })
+    return usage.data.budgets > 0 ? t('categories.deleteUnusedWithBudgetBody') : t('categories.deleteUnusedBody')
+  }
+
+  const confirmDelete = async () => {
+    if (!deleting) return
+    try {
+      if (inUse) {
+        await setArchived.mutateAsync({ id: deleting.id, archived: true })
+        toast.success(t('categories.archived', { name: deleting.name }))
+      } else {
+        await deleteCategory.mutateAsync(deleting.id)
+        toast.success(t('categories.deleted', { name: deleting.name }))
+      }
+    } catch (error) {
+      toast.error(errorMessage(error, t))
+      throw error
+    }
+  }
 
   const listProps = {
     loading: categories.isPending,
@@ -211,20 +255,12 @@ export function CategoriesPage() {
       <ConfirmDialog
         open={deleting !== null}
         onOpenChange={(open) => !open && setDeleting(null)}
-        title={t('categories.deleteTitle', { name: deleting?.name ?? '' })}
-        description={t('categories.deleteBody')}
-        confirmLabel={t('common.delete')}
-        destructive
-        onConfirm={async () => {
-          if (!deleting) return
-          try {
-            await deleteCategory.mutateAsync(deleting.id)
-            toast.success(t('categories.deleted', { name: deleting.name }))
-          } catch (error) {
-            toast.error(errorMessage(error, t))
-            throw error
-          }
-        }}
+        title={t(inUse ? 'categories.deleteInUseTitle' : 'categories.deleteTitle', { name: deleting?.name ?? '' })}
+        description={deleting ? deleteDescription() : ''}
+        confirmLabel={inUse ? t('common.archive') : t('common.delete')}
+        destructive={!inUse}
+        confirmDisabled={!usage.isSuccess}
+        onConfirm={confirmDelete}
       />
     </>
   )
